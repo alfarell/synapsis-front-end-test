@@ -1,6 +1,6 @@
-import { MainFooter, Navbar } from "@/components";
-import { Layout } from "antd";
-import { PropsWithChildren } from "react";
+import { MainFooter, Navbar } from '@/components';
+import { Layout } from 'antd';
+import { PropsWithChildren } from 'react';
 
 export default function BaseLayout({ children }: PropsWithChildren) {
   return (

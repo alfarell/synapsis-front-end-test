@@ -2,23 +2,23 @@ import React, {
   createContext,
   useState,
   useContext,
-  PropsWithChildren,
-} from "react";
-import { ConfigProvider, theme, type ThemeConfig } from "antd";
+  PropsWithChildren
+} from 'react';
+import { ConfigProvider, theme, type ThemeConfig } from 'antd';
 
 type ThemeContexttype = {
   toggleTheme: Function;
 };
 const ThemeContext = createContext<ThemeContexttype>({
-  toggleTheme: () => {},
+  toggleTheme: () => {}
 });
 
 enum Themes {
   light,
-  dark,
+  dark
 }
 const initThemeConfig: ThemeConfig = {
-  token: {},
+  token: {}
 };
 
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -38,7 +38,7 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
           algorithm:
             currentTheme === Themes.light
               ? theme.defaultAlgorithm
-              : theme.darkAlgorithm,
+              : theme.darkAlgorithm
         }}
       >
         {children}
