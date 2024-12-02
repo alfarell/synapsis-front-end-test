@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky && husky install"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.0",
@@ -23,8 +24,16 @@
     "autoprefixer": "^10",
     "eslint": "^8",
     "eslint-config-next": "13.5.7",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
     "postcss": "^8",
+    "prettier": "^3.4.1",
     "tailwindcss": "^3",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js, jsx, ts, tsx}": "eslint --fix",
+    "*.{js, css, md}": "prettier --write"
   }
 }
