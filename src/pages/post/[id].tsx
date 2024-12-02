@@ -1,0 +1,119 @@
+'use client';
+
+import { getPostCommentsData, getPostDetailData } from '@/services/posts';
+import {
+  dehydrate,
+  DehydratedState,
+  HydrationBoundary,
+  useQuery
+} from '@tanstack/react-query';
+import { Avatar, Card, Pagination, Typography } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { GetServerSidePropsContext } from 'next';
+import { queryClient } from '@/libs/react-query';
+import { useState } from 'react';
+import { PostSkeleton } from '@/components';
+
+const { Text } = Typography;
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const params = ctx?.params;
+  const postId = parseInt((params?.id || '') as string);
+  await queryClient.prefetchQuery({
+    queryKey: ['post', postId],
+    queryFn: () => getPostDetailData(postId)
+  });
+  await queryClient.prefetchQuery({
+    queryKey: ['comments', postId],
+    queryFn: () => getPostCommentsData(postId)
+  });
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      postId
+    }
+  };
+};
+
+const PostDetail = ({ postId }: { postId: number }) => {
+  const [commentPage, setCommentPage] = useState(1);
+
+  const { data: postData } = useQuery({
+    queryKey: ['post', postId],
+    queryFn: () => getPostDetailData(postId)
+  });
+  const { data: commentData, isLoading: isCommentLoading } = useQuery({
+    queryKey: ['comments', postId, commentPage],
+    queryFn: () => getPostCommentsData(postId)
+  });
+  const totalPage = commentData?.meta?.pagination?.total;
+
+  return (
+    <div className='py-5'>
+      <Card
+        title={
+          <div key='user'>
+            <Avatar
+              style={{ backgroundColor: '#87d068' }}
+              className='mr-2'
+              icon={<UserOutlined />}
+            />
+            <Text>user_{postData?.data?.user_id}</Text>
+          </div>
+        }
+      >
+        <Card.Meta
+          title={postData?.data?.title}
+          description={
+            <div>
+              <Text>{postData?.data?.body}</Text>
+            </div>
+          }
+        />
+      </Card>
+      <Card title='Comments'>
+        {isCommentLoading ? (
+          <PostSkeleton />
+        ) : (
+          commentData?.data?.map((comment) => {
+            return (
+              <Card
+                key={comment.id}
+                className='[&:not(:first-child)]:my-2'
+                type='inner'
+                title={comment.name}
+              >
+                {comment.body}
+              </Card>
+            );
+          })
+        )}
+        <Pagination
+          className='mt-8 w-full'
+          align='center'
+          defaultCurrent={commentPage}
+          total={totalPage}
+          showSizeChanger={false}
+          onChange={(current) => setCommentPage(current)}
+        />
+      </Card>
+    </div>
+  );
+};
+
+const PostDetailRoute = ({
+  dehydratedState,
+  postId
+}: {
+  dehydratedState: DehydratedState;
+  postId: number;
+}) => {
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <PostDetail postId={postId} />
+    </HydrationBoundary>
+  );
+};
+
+export default PostDetailRoute;

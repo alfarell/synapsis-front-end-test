@@ -5,12 +5,17 @@ import {
   CommentOutlined,
   AlignLeftOutlined
 } from '@ant-design/icons';
+import { useRouter } from 'next/navigation';
 
 const { Text } = Typography;
 
 const PostCard = ({ data }: { data: Post }) => {
+  const router = useRouter();
+
   const onClickComment = () => {};
-  const onClickDetail = () => {};
+  const onClickDetail = () => {
+    router.push(`/post/${data.id}`);
+  };
 
   return (
     <Card
