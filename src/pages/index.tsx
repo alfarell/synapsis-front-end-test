@@ -5,8 +5,7 @@ import { Post, PostsResponse } from '@/types';
 import { getPostsData } from '@/services/posts';
 import { useQuery } from '@tanstack/react-query';
 import { POSTS_QUERY } from '@/libs/react-query';
-import { PostSkeleton } from '@/components';
-import PostCard from '@/components/PostCard';
+import { PostSkeleton, PostCard } from '@/components';
 import { useState } from 'react';
 
 const { Text } = Typography;
