@@ -10,7 +10,7 @@ import {
 import { Avatar, Card, Pagination, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { GetServerSidePropsContext } from 'next';
-import { queryClient } from '@/libs/react-query';
+import { COMMENTS_QUERY, POST_QUERY, queryClient } from '@/libs/react-query';
 import { useState } from 'react';
 import { PostSkeleton } from '@/components';
 
@@ -20,11 +20,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const params = ctx?.params;
   const postId = parseInt((params?.id || '') as string);
   await queryClient.prefetchQuery({
-    queryKey: ['post', postId],
+    queryKey: [POST_QUERY, postId],
     queryFn: () => getPostDetailData(postId)
   });
   await queryClient.prefetchQuery({
-    queryKey: ['comments', postId],
+    queryKey: [COMMENTS_QUERY, postId],
     queryFn: () => getPostCommentsData(postId)
   });
 
