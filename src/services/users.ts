@@ -57,8 +57,17 @@ export async function userLogin({
 }
 
 export async function getUserDetailData(id: number) {
+  const userData = getUserData();
+
   const { data }: AxiosResponse<UserResponse> = await axios.get(
-    `/public/v1/users/${id}`
+    `/public/v1/users/${id}`,
+    {
+      headers: {
+        ...(userData?.accessToken && {
+          Authorization: `Bearer ${userData?.accessToken}`
+        })
+      }
+    }
   );
 
   return data;

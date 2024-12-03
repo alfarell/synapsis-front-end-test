@@ -2,7 +2,8 @@ import { usePostForm } from '@/context/PostFormContext';
 import { createPost } from '@/services/posts';
 import { CreatePostRequest } from '@/types';
 import { useMutation } from '@tanstack/react-query';
-import { Button, Form, Input, Modal } from 'antd';
+import { Form, Input, Modal } from 'antd';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const { TextArea } = Input;
@@ -18,6 +19,7 @@ interface FieldData {
 }
 
 const PostFormModal = () => {
+  const router = useRouter();
   const { isModalOpen, toggleModalOpen } = usePostForm();
 
   const [field, setField] = useState<FieldData[]>([
@@ -27,11 +29,13 @@ const PostFormModal = () => {
 
   const {
     mutate: mutateNewPost,
+    data: postDataResult,
     isPending,
     isSuccess
   } = useMutation({
     mutationFn: createPost
   });
+  const postId = postDataResult?.data?.id;
 
   const handleSubmit = () => {
     const postData = {
@@ -43,8 +47,12 @@ const PostFormModal = () => {
   };
 
   useEffect(() => {
-    if (isSuccess) console.log('success', isSuccess);
-  }, [isSuccess]);
+    if (isSuccess && postId) {
+      toggleModalOpen();
+      router.push(`/post/${postId}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, postId]);
 
   return (
     <Modal

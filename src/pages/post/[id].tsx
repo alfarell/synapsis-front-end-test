@@ -18,7 +18,7 @@ import {
 } from '@/libs/react-query';
 import { useState } from 'react';
 import { PostSkeleton } from '@/components';
-import { getUserData } from '@/services/users';
+import { getUserDetailData } from '@/services/users';
 
 const { Text } = Typography;
 
@@ -55,7 +55,7 @@ const PostDetail = ({ postId }: { postId: number }) => {
   });
   const { data: userData, isLoading: isUserLoading } = useQuery({
     queryKey: [USER_QUERY, postData?.data?.user_id],
-    queryFn: () => getUserData(postData?.data?.user_id as number)
+    queryFn: () => getUserDetailData(postData?.data?.user_id as number)
   });
   const totalPage = commentData?.meta?.pagination?.total;
 
