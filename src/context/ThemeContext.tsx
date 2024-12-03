@@ -2,7 +2,8 @@ import React, {
   createContext,
   useState,
   useContext,
-  PropsWithChildren
+  PropsWithChildren,
+  useEffect
 } from 'react';
 import { ConfigProvider, theme, type ThemeConfig } from 'antd';
 
@@ -26,10 +27,18 @@ const initThemeConfig: ThemeConfig = {
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState(Themes.light);
 
+  useEffect(() => {
+    const theme = localStorage.getItem('theme') || 0;
+    setCurrentTheme(Number(theme));
+  }, []);
+
   const toggleTheme = () => {
-    setCurrentTheme((prevTheme) =>
-      prevTheme === Themes.light ? Themes.dark : Themes.light
-    );
+    setCurrentTheme((prevTheme) => {
+      const changeTheme =
+        prevTheme === Themes.light ? Themes.dark : Themes.light;
+      localStorage.setItem('theme', JSON.stringify(changeTheme));
+      return changeTheme;
+    });
   };
 
   return (
