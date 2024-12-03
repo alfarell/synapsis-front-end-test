@@ -40,7 +40,7 @@ export default function Home() {
   }
 
   return (
-    <div className='p-5'>
+    <div className='py-5'>
       {data?.map((post: Post) => {
         return <PostCard key={post.id} data={post} />;
       })}
