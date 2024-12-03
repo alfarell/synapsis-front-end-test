@@ -6,17 +6,19 @@ import React, {
 } from 'react';
 import { ConfigProvider, theme, type ThemeConfig } from 'antd';
 
-type ThemeContexttype = {
-  toggleTheme: Function;
-};
-const ThemeContext = createContext<ThemeContexttype>({
-  toggleTheme: () => {}
-});
-
-enum Themes {
+export enum Themes {
   light,
   dark
 }
+export type ThemeContexttype = {
+  currentTheme: Themes;
+  toggleTheme: Function;
+};
+const ThemeContext = createContext<ThemeContexttype>({
+  currentTheme: Themes.light,
+  toggleTheme: () => {}
+});
+
 const initThemeConfig: ThemeConfig = {
   token: {}
 };
@@ -31,7 +33,7 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ toggleTheme }}>
+    <ThemeContext.Provider value={{ currentTheme, toggleTheme }}>
       <ConfigProvider
         theme={{
           ...initThemeConfig,
