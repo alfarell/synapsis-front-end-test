@@ -10,9 +10,15 @@ import {
 import { Avatar, Card, Pagination, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { GetServerSidePropsContext } from 'next';
-import { COMMENTS_QUERY, POST_QUERY, queryClient } from '@/libs/react-query';
+import {
+  queryClient,
+  COMMENTS_QUERY,
+  POST_QUERY,
+  USER_QUERY
+} from '@/libs/react-query';
 import { useState } from 'react';
 import { PostSkeleton } from '@/components';
+import { getUserData } from '@/services/users';
 
 const { Text } = Typography;
 
@@ -47,19 +53,30 @@ const PostDetail = ({ postId }: { postId: number }) => {
     queryKey: ['comments', postId, commentPage],
     queryFn: () => getPostCommentsData(postId)
   });
+  const { data: userData, isLoading: isUserLoading } = useQuery({
+    queryKey: [USER_QUERY, postData?.data?.user_id],
+    queryFn: () => getUserData(postData?.data?.user_id as number)
+  });
   const totalPage = commentData?.meta?.pagination?.total;
 
   return (
     <div className='py-5'>
       <Card
         title={
-          <div key='user'>
+          <div key='user' className='flex items-center'>
             <Avatar
               style={{ backgroundColor: '#87d068' }}
               className='mr-2'
               icon={<UserOutlined />}
             />
-            <Text>user_{postData?.data?.user_id}</Text>
+            <div className='flex flex-col'>
+              <Text>
+                {userData?.data?.name} (user_{postData?.data?.user_id})
+              </Text>
+              <Text className='text-xs font-normal text-gray-500'>
+                {userData?.data?.email}
+              </Text>
+            </div>
           </div>
         }
       >
