@@ -1,13 +1,15 @@
 import { Themes, useTheme } from '@/context/ThemeContext';
 import { Button, Layout, Tooltip } from 'antd';
-import { SunOutlined, MoonOutlined } from '@ant-design/icons';
+import { SunOutlined, MoonOutlined, PlusOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
+import { usePostForm } from '@/context/PostFormContext';
 
 const { Header } = Layout;
 
 const Navbar = () => {
   const router = useRouter();
   const { currentTheme, toggleTheme } = useTheme();
+  const { toggleModalOpen } = usePostForm();
 
   return (
     <Header className='flex items-center justify-center sticky top-0 z-10'>
@@ -21,6 +23,13 @@ const Navbar = () => {
           </span>
         </div>
         <div id='actions'>
+          <Button
+            className='mr-20'
+            icon={<PlusOutlined />}
+            onClick={() => toggleModalOpen()}
+          >
+            Create Post
+          </Button>
           <Tooltip title='Change theme'>
             <Button
               shape='circle'

@@ -29,3 +29,8 @@ export type PostCommentsResponse = {
   data: Comments;
   meta: Meta;
 };
+
+export interface CreatePostRequest {
+  title: string;
+  body: string;
+}

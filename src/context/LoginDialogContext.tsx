@@ -14,6 +14,8 @@ export type ThemeContexttype = {
   handleCloseDialog: Function;
   handleWelcomeOpen: Function;
   handleWelcomeClose: Function;
+  getUserData: Function;
+  isLoggedIn: Function;
 };
 const LoginDialogContext = createContext<ThemeContexttype>({
   isWelcome: false,
@@ -21,8 +23,15 @@ const LoginDialogContext = createContext<ThemeContexttype>({
   handleOpenDialog: () => {},
   handleCloseDialog: () => {},
   handleWelcomeOpen: () => {},
-  handleWelcomeClose: () => {}
+  handleWelcomeClose: () => {},
+  getUserData: () => {},
+  isLoggedIn: () => {}
 });
+
+export interface UserData {
+  name: string;
+  accessToken: string;
+}
 
 export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
   children
@@ -46,13 +55,21 @@ export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
     localStorage.setItem('init_open', 'false');
   };
 
+  const getUserData = (): UserData => {
+    const userData = localStorage.getItem('user_data');
+    return JSON.parse(userData || '{}') as UserData;
+  };
+  const isLoggedIn = useCallback((): boolean => {
+    const data = getUserData();
+    return !!data?.name && !!data?.accessToken;
+  }, []);
+
   useEffect(() => {
     const isInitOpen = localStorage.getItem('init_open');
-    const isLoggedIn = localStorage.getItem('user_data');
-    if (!isLoggedIn && !isInitOpen) {
+    if (!isLoggedIn() && !isInitOpen) {
       handleWelcomeOpen();
     }
-  }, [isWelcome, handleWelcomeOpen]);
+  }, [isWelcome, handleWelcomeOpen, isLoggedIn]);
 
   return (
     <LoginDialogContext.Provider
@@ -62,7 +79,9 @@ export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
         handleOpenDialog,
         handleCloseDialog,
         handleWelcomeOpen,
-        handleWelcomeClose
+        handleWelcomeClose,
+        getUserData,
+        isLoggedIn
       }}
     >
       {children}
