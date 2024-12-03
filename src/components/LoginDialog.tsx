@@ -1,6 +1,11 @@
 import { useLoginDialog } from '@/context/LoginDialogContext';
-import { Button, Form, Input, Modal, Typography } from 'antd';
-import { useState } from 'react';
+import { USERS_QUERY } from '@/libs/react-query';
+import { userLogin } from '@/services/users';
+import { UserData } from '@/types';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Alert, Button, Form, Input, Modal, Typography } from 'antd';
+import { AxiosError } from 'axios';
+import { useEffect, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -23,20 +28,31 @@ const LoginDialog = () => {
     { name: ['Access Token'], value: '' }
   ]);
 
-  const handleSubmit = () => {
+  const {
+    mutate: mutateLogin,
+    isPending: loginPending,
+    isSuccess,
+    error
+  } = useMutation({
+    mutationFn: userLogin
+  });
+
+  const handleSubmit = async () => {
     const userData = {
       name: field[0].value,
       accessToken: field[1].value
     };
 
-    localStorage.setItem('user_data', JSON.stringify(userData));
-
-    handleWelcomeClose();
+    mutateLogin(userData);
   };
 
   const handleCancel = () => {
     handleWelcomeClose();
   };
+
+  useEffect(() => {
+    if (isSuccess) handleWelcomeClose();
+  }, [isSuccess, handleWelcomeClose]);
 
   return (
     <Modal
@@ -44,18 +60,13 @@ const LoginDialog = () => {
       open={isOpen}
       onOk={handleSubmit}
       onCancel={handleCancel}
-      footer={[
-        ...(isWelcome
-          ? [
-              <Button key='back' onClick={handleCancel}>
-                Continue as Guest
-              </Button>
-            ]
-          : []),
-        <Button key='back' type='primary' onClick={handleSubmit}>
-          Submit
-        </Button>
-      ]}
+      okText='Login'
+      cancelText='Continue as Guest'
+      cancelButtonProps={{
+        hidden: !isWelcome,
+        disabled: loginPending
+      }}
+      confirmLoading={loginPending}
     >
       <div className='mb-2'>
         <Text>
@@ -96,6 +107,15 @@ const LoginDialog = () => {
             Log in
           </Button>
         </Form.Item>
+
+        {!loginPending && error && (
+          <Alert
+            message='Login Failed'
+            description={error?.message}
+            type='error'
+            closable
+          />
+        )}
       </Form>
     </Modal>
   );

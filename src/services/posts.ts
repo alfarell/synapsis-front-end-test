@@ -1,4 +1,3 @@
-import { UserData } from '@/context/LoginDialogContext';
 import axios from '@/libs/axios';
 import {
   CreatePostRequest,
@@ -7,6 +6,7 @@ import {
   PostsResponse
 } from '@/types';
 import { AxiosResponse } from 'axios';
+import { getUserData } from './users';
 
 export async function getPostsData(page: number = 1, per_page: number = 10) {
   const { data }: AxiosResponse<PostsResponse> = await axios.get(
@@ -45,12 +45,11 @@ export async function getPostCommentsData(id: number, page: number = 1) {
 }
 
 export async function createPost(data: CreatePostRequest) {
-  const userData = localStorage.getItem('user_data');
-  const parseUser: UserData = JSON.parse(userData || '{}');
+  const userData = getUserData();
 
   const res = await axios.post('/public/v1/posts/', data, {
     headers: {
-      Authorization: parseUser?.accessToken
+      Authorization: userData?.accessToken
     }
   });
 

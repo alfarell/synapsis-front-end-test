@@ -1,3 +1,4 @@
+import { getUserData } from '@/services/users';
 import React, {
   createContext,
   useState,
@@ -14,7 +15,6 @@ export type ThemeContexttype = {
   handleCloseDialog: Function;
   handleWelcomeOpen: Function;
   handleWelcomeClose: Function;
-  getUserData: Function;
   isLoggedIn: Function;
 };
 const LoginDialogContext = createContext<ThemeContexttype>({
@@ -24,14 +24,8 @@ const LoginDialogContext = createContext<ThemeContexttype>({
   handleCloseDialog: () => {},
   handleWelcomeOpen: () => {},
   handleWelcomeClose: () => {},
-  getUserData: () => {},
   isLoggedIn: () => {}
 });
-
-export interface UserData {
-  name: string;
-  accessToken: string;
-}
 
 export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
   children
@@ -55,13 +49,9 @@ export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
     localStorage.setItem('init_open', 'false');
   };
 
-  const getUserData = (): UserData => {
-    const userData = localStorage.getItem('user_data');
-    return JSON.parse(userData || '{}') as UserData;
-  };
   const isLoggedIn = useCallback((): boolean => {
     const data = getUserData();
-    return !!data?.name && !!data?.accessToken;
+    return !!data?.user && !!data?.accessToken;
   }, []);
 
   useEffect(() => {
@@ -80,7 +70,6 @@ export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
         handleCloseDialog,
         handleWelcomeOpen,
         handleWelcomeClose,
-        getUserData,
         isLoggedIn
       }}
     >
