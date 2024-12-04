@@ -91,3 +91,32 @@ export async function createPost(newPostData: CreatePostRequest) {
     throw error;
   }
 }
+
+export async function editPost({
+  postId,
+  postData
+}: {
+  postId: number | undefined;
+  postData: CreatePostRequest;
+}) {
+  const userData = getUserData();
+
+  if (!postId) throw new Error('Post Id is required');
+
+  try {
+    const { data } = await axios.put(`/public/v1/posts/${postId}`, postData, {
+      headers: {
+        Authorization: `Bearer ${userData?.accessToken}`
+      }
+    });
+
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const errorMessage = error?.response?.data.data.message;
+      throw new Error(errorMessage);
+    }
+
+    throw error;
+  }
+}

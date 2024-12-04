@@ -2,17 +2,21 @@ import { Post } from '@/types';
 import { Avatar, Card, Typography } from 'antd';
 import {
   UserOutlined,
-  CommentOutlined,
-  AlignLeftOutlined
+  AlignLeftOutlined,
+  EditOutlined
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
+import { getUserData } from '@/services/users';
+import { usePostForm } from '@/context/PostFormContext';
 
 const { Text } = Typography;
 
 const PostCard = ({ data }: { data: Post }) => {
   const router = useRouter();
+  const { handleOpenEditModal } = usePostForm();
+  const userData = getUserData();
+  const isCurrentUserPost = userData?.user?.id === data.user_id;
 
-  const onClickComment = () => {};
   const onClickDetail = () => {
     router.push(`/post/${data.id}`);
   };
@@ -21,14 +25,18 @@ const PostCard = ({ data }: { data: Post }) => {
     <Card
       className='min-w-[300px] [&:not(:first-child)]:my-2'
       actions={[
-        <div key='comment' onClick={onClickComment}>
-          <CommentOutlined className='mr-2' />
-          <Text>Comment</Text>
-        </div>,
         <div key='detail' onClick={onClickDetail}>
           <AlignLeftOutlined className='mr-2' />
           <Text>See Detail</Text>
-        </div>
+        </div>,
+        ...(isCurrentUserPost
+          ? [
+              <div key='edit' onClick={() => handleOpenEditModal(data)}>
+                <EditOutlined className='mr-2' />
+                <Text>Edit</Text>
+              </div>
+            ]
+          : [])
       ]}
     >
       <Card.Meta

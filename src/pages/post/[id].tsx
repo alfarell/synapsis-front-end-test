@@ -7,8 +7,8 @@ import {
   HydrationBoundary,
   useQuery
 } from '@tanstack/react-query';
-import { Avatar, Card, Pagination, Typography } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Pagination, Typography } from 'antd';
+import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { GetServerSidePropsContext } from 'next';
 import {
   queryClient,
@@ -18,7 +18,8 @@ import {
 } from '@/libs/react-query';
 import { useState } from 'react';
 import { PostSkeleton } from '@/components';
-import { getUserDetailData } from '@/services/users';
+import { getUserData, getUserDetailData } from '@/services/users';
+import { usePostForm } from '@/context/PostFormContext';
 
 const { Text } = Typography;
 
@@ -43,21 +44,24 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const PostDetail = ({ postId }: { postId: number }) => {
+  const { handleOpenEditModal } = usePostForm();
   const [commentPage, setCommentPage] = useState(1);
+  const userData = getUserData();
 
   const { data: postData } = useQuery({
-    queryKey: ['post', postId],
+    queryKey: [POST_QUERY, postId],
     queryFn: () => getPostDetailData(postId)
   });
   const { data: commentData, isLoading: isCommentLoading } = useQuery({
-    queryKey: ['comments', postId, commentPage],
+    queryKey: [COMMENTS_QUERY, postId, commentPage],
     queryFn: () => getPostCommentsData(postId)
   });
-  const { data: userData, isLoading: isUserLoading } = useQuery({
+  const { data: postOwnerData, isLoading: isUserLoading } = useQuery({
     queryKey: [USER_QUERY, postData?.data?.user_id],
     queryFn: () => getUserDetailData(postData?.data?.user_id as number)
   });
   const totalPage = commentData?.meta?.pagination?.total;
+  const isCurrentUserPost = userData?.user?.id === postData?.data?.user_id;
 
   return (
     <div className='py-5'>
@@ -70,15 +74,35 @@ const PostDetail = ({ postId }: { postId: number }) => {
               icon={<UserOutlined />}
             />
             <div className='flex flex-col'>
-              <Text>
-                {userData?.data?.name} (user_{postData?.data?.user_id})
-              </Text>
-              <Text className='text-xs font-normal text-gray-500'>
-                {userData?.data?.email}
-              </Text>
+              {isUserLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                <>
+                  <Text>
+                    {postOwnerData?.data?.name} (user_{postData?.data?.user_id})
+                  </Text>
+                  <Text className='text-xs font-normal text-gray-500'>
+                    {postOwnerData?.data?.email}
+                  </Text>
+                </>
+              )}
             </div>
           </div>
         }
+        extra={[
+          ...(!isUserLoading && isCurrentUserPost
+            ? [
+                <Button
+                  key='edit'
+                  type='text'
+                  icon={<EditOutlined />}
+                  onClick={() => handleOpenEditModal(postData?.data)}
+                >
+                  Edit
+                </Button>
+              ]
+            : [])
+        ]}
       >
         <Card.Meta
           title={postData?.data?.title}

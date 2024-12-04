@@ -7,7 +7,8 @@ export function setUserData(userData: UserData) {
 }
 
 export function getUserData() {
-  const userData = localStorage.getItem('user_data');
+  const userData =
+    typeof window !== 'undefined' ? localStorage.getItem('user_data') : '{}';
   return JSON.parse(userData || '{}') as UserData;
 }
 
@@ -58,6 +59,8 @@ export async function userLogin({
 
 export async function getUserDetailData(id: number) {
   const userData = getUserData();
+
+  if (!id) throw new Error('UserId is required');
 
   const { data }: AxiosResponse<UserResponse> = await axios.get(
     `/public/v1/users/${id}`,

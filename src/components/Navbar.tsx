@@ -9,7 +9,7 @@ const { Header } = Layout;
 const Navbar = () => {
   const router = useRouter();
   const { currentTheme, toggleTheme } = useTheme();
-  const { toggleModalOpen } = usePostForm();
+  const { handleOpenCraeteModal } = usePostForm();
 
   return (
     <Header className='flex items-center justify-center sticky top-0 z-10'>
@@ -26,7 +26,7 @@ const Navbar = () => {
           <Button
             className='mr-20'
             icon={<PlusOutlined />}
-            onClick={() => toggleModalOpen()}
+            onClick={() => handleOpenCraeteModal()}
           >
             Create Post
           </Button>

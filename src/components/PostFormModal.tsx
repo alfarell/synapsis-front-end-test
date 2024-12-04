@@ -1,5 +1,5 @@
-import { usePostForm } from '@/context/PostFormContext';
-import { createPost } from '@/services/posts';
+import { ModalType, usePostForm } from '@/context/PostFormContext';
+import { createPost, editPost } from '@/services/posts';
 import { CreatePostRequest } from '@/types';
 import { useMutation } from '@tanstack/react-query';
 import { Form, Input, Modal } from 'antd';
@@ -20,20 +20,28 @@ interface FieldData {
 
 const PostFormModal = () => {
   const router = useRouter();
-  const { isModalOpen, toggleModalOpen } = usePostForm();
+  const { isModalOpen, modalType, editData, handleCloseModal } = usePostForm();
+  const isCreatePost = modalType === ModalType.create;
 
   const [field, setField] = useState<FieldData[]>([
-    { name: ['title'], value: '' },
-    { name: ['body'], value: '' }
+    { name: ['title'], value: editData?.title },
+    { name: ['body'], value: editData?.body }
   ]);
 
   const {
     mutate: mutateNewPost,
     data: postDataResult,
-    isPending,
-    isSuccess
+    isPending: isNewPostPending,
+    isSuccess: isNewPostSuccess
   } = useMutation({
     mutationFn: createPost
+  });
+  const {
+    mutate: mutateUpdatePost,
+    isPending: isUpdatePostPending,
+    isSuccess: isUpdatePostSuccess
+  } = useMutation({
+    mutationFn: editPost
   });
   const postId = postDataResult?.data?.id;
 
@@ -43,25 +51,44 @@ const PostFormModal = () => {
       body: field[1].value
     };
 
-    mutateNewPost(postData);
+    isCreatePost
+      ? mutateNewPost(postData)
+      : mutateUpdatePost({ postId: editData?.id, postData });
   };
 
   useEffect(() => {
-    if (isSuccess && postId) {
-      toggleModalOpen();
+    if (editData) {
+      setField([
+        { name: ['title'], value: editData?.title },
+        { name: ['body'], value: editData?.body }
+      ]);
+    }
+  }, [editData]);
+
+  useEffect(() => {
+    if (isNewPostSuccess && postId) {
+      handleCloseModal();
       router.push(`/post/${postId}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, postId]);
+  }, [isNewPostSuccess, postId]);
+
+  useEffect(() => {
+    if (!isUpdatePostPending && isUpdatePostSuccess) {
+      handleCloseModal();
+      router.push(`/post/${editData?.id}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdatePostSuccess]);
 
   return (
     <Modal
-      title='Create Post'
+      title={isCreatePost ? 'Create Post' : 'Edit Post'}
       open={isModalOpen}
       width={1000}
       onOk={handleSubmit}
-      onCancel={() => toggleModalOpen()}
-      confirmLoading={isPending}
+      onCancel={() => handleCloseModal()}
+      confirmLoading={isNewPostPending || isUpdatePostPending}
     >
       <Form
         name='basic'
@@ -75,6 +102,7 @@ const PostFormModal = () => {
         <Form.Item<FieldType>
           label='Title'
           name='title'
+          initialValue={editData?.title}
           rules={[{ required: true, message: 'Post title is required' }]}
           className='mb-2'
         >
@@ -83,6 +111,7 @@ const PostFormModal = () => {
         <Form.Item<FieldType>
           label='Body'
           name='body'
+          initialValue={editData?.body}
           rules={[{ required: true, message: 'Post body is required' }]}
           className='mb-2'
         >
