@@ -1,5 +1,6 @@
 import { useLoginDialog } from '@/context/LoginDialogContext';
 import { userLogin } from '@/services/users';
+import { parseErrorData } from '@/utils/parseError';
 import { useMutation } from '@tanstack/react-query';
 import { Alert, Button, Form, Input, Modal, Typography } from 'antd';
 import { useEffect, useState } from 'react';
@@ -108,7 +109,7 @@ const LoginDialog = () => {
         {!loginPending && error && (
           <Alert
             message='Login Failed'
-            description={error?.message}
+            description={parseErrorData(error)}
             type='error'
             closable
           />

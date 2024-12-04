@@ -1,11 +1,12 @@
 import { ModalType, usePostForm } from '@/context/PostFormContext';
 import { createPost, deletePost, editPost } from '@/services/posts';
 import { CreatePostRequest } from '@/types';
+import { parseErrorData } from '@/utils/parseError';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
-import { Button, Form, Input, Modal, Spin } from 'antd';
+import { Alert, Button, Form, Input, Modal, Spin } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const { TextArea } = Input;
 const { confirm } = Modal;
@@ -37,27 +38,34 @@ const PostFormModal = () => {
     mutate: mutateNewPost,
     data: postDataResult,
     isPending: isNewPostPending,
-    isSuccess: isNewPostSuccess
+    isSuccess: isNewPostSuccess,
+    error: newPostError
   } = useMutation({
     mutationFn: createPost
   });
   const {
     mutate: mutateUpdatePost,
     isPending: isUpdatePostPending,
-    isSuccess: isUpdatePostSuccess
+    isSuccess: isUpdatePostSuccess,
+    error: updatePostError
   } = useMutation({
     mutationFn: editPost
   });
   const {
     mutate: mutateDeletePost,
     isPending: isDeletePostPending,
-    isSuccess: isDeletePostSuccess
+    isSuccess: isDeletePostSuccess,
+    error: deletePostError
   } = useMutation({
     mutationFn: deletePost
   });
   const postId = postDataResult?.data?.id;
-  const isLoading =
-    isNewPostPending || isUpdatePostPending || isDeletePostPending;
+  const isLoading = useMemo(() => {
+    return isNewPostPending || isUpdatePostPending || isDeletePostPending;
+  }, [isNewPostPending, isUpdatePostPending, isDeletePostPending]);
+  const mutateErrors = useMemo(() => {
+    return newPostError || updatePostError || deletePostError;
+  }, [newPostError, updatePostError, deletePostError]);
 
   const handleSubmit = () => {
     const postData = {
@@ -96,7 +104,7 @@ const PostFormModal = () => {
   useEffect(() => {
     if (!isUpdatePostPending && isUpdatePostSuccess) {
       handleCloseModal();
-      router.push(`/post/${editData?.id}`);
+      router.refresh();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdatePostPending, isUpdatePostSuccess]);
@@ -184,6 +192,15 @@ const PostFormModal = () => {
           />
         </Form.Item>
       </Form>
+
+      {!isLoading && mutateErrors && (
+        <Alert
+          message='Error:'
+          description={parseErrorData(mutateErrors)}
+          type='error'
+          closable
+        />
+      )}
     </Modal>
   );
 };
