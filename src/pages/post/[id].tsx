@@ -25,7 +25,7 @@ const { Text } = Typography;
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const params = ctx?.params;
-  const postId = parseInt((params?.id || '') as string);
+  const postId = parseInt((params?.id || '') as string, 10);
   await queryClient.prefetchQuery({
     queryKey: [POST_QUERY, postId],
     queryFn: () => getPostDetailData(postId)

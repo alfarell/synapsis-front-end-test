@@ -1,5 +1,7 @@
-export interface Meta {
-  pagination: Pagination;
+export interface Links {
+  previous: string;
+  current: string;
+  next: string;
 }
 
 export interface Pagination {
@@ -10,8 +12,6 @@ export interface Pagination {
   links: Links;
 }
 
-export interface Links {
-  previous: string;
-  current: string;
-  next: string;
+export interface Meta {
+  pagination: Pagination;
 }

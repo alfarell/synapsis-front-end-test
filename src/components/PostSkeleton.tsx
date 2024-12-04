@@ -9,7 +9,7 @@ const PostSkeleton = () => {
             key={index}
             className='min-w-[300px] [&:not(:first-child)]:my-2'
           >
-            <Skeleton loading active avatar paragraph={{ rows: 2 }}></Skeleton>
+            <Skeleton loading active avatar paragraph={{ rows: 2 }} />
           </Card>
         );
       })}

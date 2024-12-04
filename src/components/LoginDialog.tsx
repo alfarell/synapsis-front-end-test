@@ -1,10 +1,7 @@
 import { useLoginDialog } from '@/context/LoginDialogContext';
-import { USERS_QUERY } from '@/libs/react-query';
 import { userLogin } from '@/services/users';
-import { UserData } from '@/types';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Alert, Button, Form, Input, Modal, Typography } from 'antd';
-import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 
 const { Text } = Typography;

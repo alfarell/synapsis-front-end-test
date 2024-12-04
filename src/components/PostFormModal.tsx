@@ -51,9 +51,8 @@ const PostFormModal = () => {
       body: field[1].value
     };
 
-    isCreatePost
-      ? mutateNewPost(postData)
-      : mutateUpdatePost({ postId: editData?.id, postData });
+    if (isCreatePost) mutateNewPost(postData);
+    else mutateUpdatePost({ postId: editData?.id, postData });
   };
 
   useEffect(() => {

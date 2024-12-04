@@ -5,7 +5,8 @@ import React, {
   useContext,
   PropsWithChildren,
   useEffect,
-  useCallback
+  useCallback,
+  useMemo
 } from 'react';
 
 export type ThemeContexttype = {
@@ -33,21 +34,24 @@ export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
   const [isWelcome, setIsWelcome] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleOpenDialog = () => {
+  const handleOpenDialog = useCallback(() => {
     setIsOpen(true);
-  };
-  const handleCloseDialog = () => {
+  }, []);
+
+  const handleCloseDialog = useCallback(() => {
     setIsOpen(false);
-  };
+  }, []);
+
   const handleWelcomeOpen = useCallback(() => {
     handleOpenDialog();
     setIsWelcome(true);
-  }, []);
-  const handleWelcomeClose = () => {
+  }, [handleOpenDialog]);
+
+  const handleWelcomeClose = useCallback(() => {
     handleCloseDialog();
     setIsWelcome(false);
     localStorage.setItem('init_open', 'false');
-  };
+  }, [handleCloseDialog]);
 
   const isLoggedIn = useCallback((): boolean => {
     const data = getUserData();
@@ -61,18 +65,28 @@ export const LoginDialogProvider: React.FC<PropsWithChildren> = ({
     }
   }, [isWelcome, handleWelcomeOpen, isLoggedIn]);
 
+  const providerValue = useMemo(() => {
+    return {
+      isWelcome,
+      isOpen,
+      handleOpenDialog,
+      handleCloseDialog,
+      handleWelcomeOpen,
+      handleWelcomeClose,
+      isLoggedIn
+    };
+  }, [
+    isWelcome,
+    isOpen,
+    handleOpenDialog,
+    handleCloseDialog,
+    handleWelcomeOpen,
+    handleWelcomeClose,
+    isLoggedIn
+  ]);
+
   return (
-    <LoginDialogContext.Provider
-      value={{
-        isWelcome,
-        isOpen,
-        handleOpenDialog,
-        handleCloseDialog,
-        handleWelcomeOpen,
-        handleWelcomeClose,
-        isLoggedIn
-      }}
-    >
+    <LoginDialogContext.Provider value={providerValue}>
       {children}
     </LoginDialogContext.Provider>
   );

@@ -10,6 +10,7 @@
     "prepare": "husky && husky install"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.2",
     "@tanstack/react-query": "^5.62.0",
     "antd": "^5.22.2",
     "axios": "^1.7.8",
@@ -24,8 +25,10 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
     "eslint": "^8",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "13.5.7",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "postcss": "^8",

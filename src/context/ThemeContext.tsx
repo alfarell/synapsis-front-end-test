@@ -3,12 +3,16 @@ import React, {
   useState,
   useContext,
   PropsWithChildren,
-  useEffect
+  useEffect,
+  useCallback,
+  useMemo
 } from 'react';
 import { ConfigProvider, theme, type ThemeConfig } from 'antd';
 
 export enum Themes {
+  // eslint-disable-next-line no-unused-vars
   light,
+  // eslint-disable-next-line no-unused-vars
   dark
 }
 export type ThemeContexttype = {
@@ -32,17 +36,21 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setCurrentTheme(Number(theme));
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setCurrentTheme((prevTheme) => {
       const changeTheme =
         prevTheme === Themes.light ? Themes.dark : Themes.light;
       localStorage.setItem('theme', JSON.stringify(changeTheme));
       return changeTheme;
     });
-  };
+  }, []);
+
+  const providerValue = useMemo(() => {
+    return { currentTheme, toggleTheme };
+  }, [currentTheme, toggleTheme]);
 
   return (
-    <ThemeContext.Provider value={{ currentTheme, toggleTheme }}>
+    <ThemeContext.Provider value={providerValue}>
       <ConfigProvider
         theme={{
           ...initThemeConfig,

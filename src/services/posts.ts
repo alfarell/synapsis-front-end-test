@@ -15,8 +15,8 @@ export async function getPostsData(page: number = 1, per_page: number = 10) {
     '/public/v1/posts',
     {
       params: {
-        page: page,
-        per_page: per_page
+        page,
+        per_page
       },
       headers: {
         ...(userData?.accessToken && {

@@ -2,13 +2,17 @@ import React, {
   createContext,
   useState,
   useContext,
-  PropsWithChildren
+  PropsWithChildren,
+  useMemo,
+  useCallback
 } from 'react';
-import { useLoginDialog } from './LoginDialogContext';
 import { CreatePostRequest, Post } from '@/types';
+import { useLoginDialog } from './LoginDialogContext';
 
 export enum ModalType {
+  // eslint-disable-next-line no-unused-vars
   create,
+  // eslint-disable-next-line no-unused-vars
   edit
 }
 export type PostFormContexttype = {
@@ -40,36 +44,51 @@ export const PostFormProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const { isLoggedIn, handleOpenDialog } = useLoginDialog();
 
-  const toggleModalOpen = () => {
+  const toggleModalOpen = useCallback(() => {
     if (!isLoggedIn()) return handleOpenDialog();
 
     setIsModalOpen((prevState) => !prevState);
-  };
-  const handleOpenCraeteModal = () => {
+  }, [handleOpenDialog, isLoggedIn]);
+
+  const handleOpenCraeteModal = useCallback(() => {
     toggleModalOpen();
     setModalType(ModalType.create);
-  };
-  const handleOpenEditModal = (data: CreatePostRequest) => {
-    toggleModalOpen();
-    setModalType(ModalType.edit);
-    setEditData(data);
-  };
-  const handleCloseModal = () => {
-    toggleModalOpen();
-  };
+  }, [toggleModalOpen]);
 
+  const handleOpenEditModal = useCallback(
+    (data: CreatePostRequest) => {
+      toggleModalOpen();
+      setModalType(ModalType.edit);
+      setEditData(data);
+    },
+    [toggleModalOpen]
+  );
+
+  const handleCloseModal = useCallback(() => {
+    toggleModalOpen();
+  }, [toggleModalOpen]);
+
+  const providerValue = useMemo(() => {
+    return {
+      isModalOpen,
+      modalType,
+      editData,
+      toggleModalOpen,
+      handleOpenCraeteModal,
+      handleOpenEditModal,
+      handleCloseModal
+    };
+  }, [
+    isModalOpen,
+    modalType,
+    editData,
+    toggleModalOpen,
+    handleOpenCraeteModal,
+    handleOpenEditModal,
+    handleCloseModal
+  ]);
   return (
-    <PostFormContext.Provider
-      value={{
-        isModalOpen,
-        modalType,
-        editData,
-        toggleModalOpen,
-        handleOpenCraeteModal,
-        handleOpenEditModal,
-        handleCloseModal
-      }}
-    >
+    <PostFormContext.Provider value={providerValue}>
       {children}
     </PostFormContext.Provider>
   );
