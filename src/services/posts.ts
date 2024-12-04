@@ -120,3 +120,26 @@ export async function editPost({
     throw error;
   }
 }
+
+export async function deletePost(postId: number | undefined) {
+  const userData = getUserData();
+
+  if (!postId) throw new Error('Post Id is required');
+
+  try {
+    const { data } = await axios.delete(`/public/v1/posts/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${userData?.accessToken}`
+      }
+    });
+
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const errorMessage = error?.response?.data.data.message;
+      throw new Error(errorMessage);
+    }
+
+    throw error;
+  }
+}
