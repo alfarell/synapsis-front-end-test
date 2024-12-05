@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { POSTS_QUERY } from '@/libs/react-query';
 import { PostSkeleton, PostCard } from '@/components';
 import { useState } from 'react';
+import Head from 'next/head';
 
 const { Text } = Typography;
 
@@ -39,22 +40,28 @@ export default function Home() {
   }
 
   return (
-    <div className='py-5'>
-      {data?.map((post: Post) => {
-        return <PostCard key={post.id} data={post} />;
-      })}
-      <Pagination
-        className='mt-8 w-full'
-        align='center'
-        defaultCurrent={page}
-        total={totalPage}
-        pageSize={perPage}
-        onChange={(current) => setPage(current)}
-        onShowSizeChange={(current, pageSize) => {
-          setPage(current);
-          setPerPage(pageSize);
-        }}
-      />
-    </div>
+    <>
+      <Head>
+        <title>BlogApp</title>
+        <meta property='description' content='Blog post platform' />
+      </Head>
+      <div className='py-5'>
+        {data?.map((post: Post) => {
+          return <PostCard key={post.id} data={post} />;
+        })}
+        <Pagination
+          className='mt-8 w-full'
+          align='center'
+          defaultCurrent={page}
+          total={totalPage}
+          pageSize={perPage}
+          onChange={(current) => setPage(current)}
+          onShowSizeChange={(current, pageSize) => {
+            setPage(current);
+            setPerPage(pageSize);
+          }}
+        />
+      </div>
+    </>
   );
 }

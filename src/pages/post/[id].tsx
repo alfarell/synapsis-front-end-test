@@ -21,6 +21,7 @@ import { PostSkeleton } from '@/components';
 import { getUserDetailData } from '@/services/users';
 import { usePostForm } from '@/context/PostFormContext';
 import { getUserData } from '@/utils/userData';
+import Head from 'next/head';
 
 const { Text } = Typography;
 
@@ -65,82 +66,92 @@ const PostDetail = ({ postId }: { postId: number }) => {
   const isCurrentUserPost = userData?.user?.id === postData?.data?.user_id;
 
   return (
-    <div className='py-5'>
-      <Card
-        title={
-          <div key='user' className='flex items-center'>
-            <Avatar
-              style={{ backgroundColor: '#87d068' }}
-              className='mr-2'
-              icon={<UserOutlined />}
-            />
-            <div className='flex flex-col'>
-              {isUserLoading ? (
-                <Text>Loading...</Text>
-              ) : (
-                <>
-                  <Text>
-                    {postOwnerData?.data?.name} (user_{postData?.data?.user_id})
-                  </Text>
-                  <Text className='text-xs font-normal text-gray-500'>
-                    {postOwnerData?.data?.email}
-                  </Text>
-                </>
-              )}
-            </div>
-          </div>
-        }
-        extra={[
-          ...(!isUserLoading && isCurrentUserPost
-            ? [
-                <Button
-                  key='edit'
-                  type='text'
-                  icon={<EditOutlined />}
-                  onClick={() => handleOpenEditModal(postData?.data)}
-                >
-                  Edit
-                </Button>
-              ]
-            : [])
-        ]}
-      >
-        <Card.Meta
-          title={postData?.data?.title}
-          description={
-            <div>
-              <Text>{postData?.data?.body}</Text>
+    <>
+      <Head>
+        <title>{postData?.data?.title || 'BlogApp - Post'}</title>
+        <meta
+          property='description'
+          content={postData?.data?.body || 'BlogApp - Post detail'}
+        />
+      </Head>
+      <div className='py-5'>
+        <Card
+          title={
+            <div key='user' className='flex items-center'>
+              <Avatar
+                style={{ backgroundColor: '#87d068' }}
+                className='mr-2'
+                icon={<UserOutlined />}
+              />
+              <div className='flex flex-col'>
+                {isUserLoading ? (
+                  <Text>Loading...</Text>
+                ) : (
+                  <>
+                    <Text>
+                      {postOwnerData?.data?.name} (user_
+                      {postData?.data?.user_id})
+                    </Text>
+                    <Text className='text-xs font-normal text-gray-500'>
+                      {postOwnerData?.data?.email}
+                    </Text>
+                  </>
+                )}
+              </div>
             </div>
           }
-        />
-      </Card>
-      <Card title='Comments'>
-        {isCommentLoading ? (
-          <PostSkeleton />
-        ) : (
-          commentData?.data?.map((comment) => {
-            return (
-              <Card
-                key={comment.id}
-                className='[&:not(:first-child)]:my-2'
-                type='inner'
-                title={comment.name}
-              >
-                {comment.body}
-              </Card>
-            );
-          })
-        )}
-        <Pagination
-          className='mt-8 w-full'
-          align='center'
-          defaultCurrent={commentPage}
-          total={totalPage}
-          showSizeChanger={false}
-          onChange={(current) => setCommentPage(current)}
-        />
-      </Card>
-    </div>
+          extra={[
+            ...(!isUserLoading && isCurrentUserPost
+              ? [
+                  <Button
+                    key='edit'
+                    type='text'
+                    icon={<EditOutlined />}
+                    onClick={() => handleOpenEditModal(postData?.data)}
+                  >
+                    Edit
+                  </Button>
+                ]
+              : [])
+          ]}
+        >
+          <Card.Meta
+            title={postData?.data?.title}
+            description={
+              <div>
+                <Text>{postData?.data?.body}</Text>
+              </div>
+            }
+          />
+        </Card>
+        <Card title='Comments'>
+          {isCommentLoading ? (
+            <PostSkeleton />
+          ) : (
+            commentData?.data?.map((comment) => {
+              return (
+                <Card
+                  key={comment.id}
+                  className='[&:not(:first-child)]:my-2'
+                  type='inner'
+                  title={comment.name}
+                >
+                  {comment.body}
+                </Card>
+              );
+            })
+          )}
+          <Pagination
+            className='mt-8 w-full'
+            align='center'
+            defaultCurrent={commentPage}
+            total={totalPage}
+            showSizeChanger={false}
+            onChange={(current) => setCommentPage(current)}
+          />
+        </Card>
+      </div>
+    </>
   );
 };
 
