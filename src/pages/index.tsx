@@ -43,7 +43,7 @@ export default function Home() {
         <title>BlogApp</title>
         <meta property='description' content='Blog post platform' />
       </Head>
-      <div className='py-5'>
+      <div className='py-5 px-2'>
         <Form
           className='flex justify-center'
           onFinish={(val) => setSearch(val?.search || '')}

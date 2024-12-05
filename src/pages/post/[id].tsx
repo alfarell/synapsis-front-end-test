@@ -74,7 +74,7 @@ const PostDetail = ({ postId }: { postId: number }) => {
           content={postData?.data?.body || 'BlogApp - Post detail'}
         />
       </Head>
-      <div className='py-5'>
+      <div className='py-5 px-2'>
         <Card
           title={
             <div key='user' className='flex items-center'>
@@ -124,7 +124,7 @@ const PostDetail = ({ postId }: { postId: number }) => {
             }
           />
         </Card>
-        <Card title='Comments'>
+        <Card title='Comments' className='mt-2'>
           {isCommentLoading ? (
             <PostSkeleton />
           ) : (
