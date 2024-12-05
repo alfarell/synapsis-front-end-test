@@ -18,8 +18,9 @@ import {
 } from '@/libs/react-query';
 import { useState } from 'react';
 import { PostSkeleton } from '@/components';
-import { getUserData, getUserDetailData } from '@/services/users';
+import { getUserDetailData } from '@/services/users';
 import { usePostForm } from '@/context/PostFormContext';
+import { getUserData } from '@/utils/userData';
 
 const { Text } = Typography;
 

@@ -1,4 +1,4 @@
-import { getUserData } from '@/services/users';
+import { getUserData } from '@/utils/userData';
 import React, {
   createContext,
   useState,

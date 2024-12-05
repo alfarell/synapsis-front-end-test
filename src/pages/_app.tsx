@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { LoginDialogProvider } from '@/context/LoginDialogContext';
 import { PostFormProvider } from '@/context/PostFormContext';
 import { setupInterceptor } from '@/libs/axios';
-import { getUserData } from '@/services/users';
+import { getUserData } from '@/utils/userData';
 import BaseLayout from './layout';
 
 setupInterceptor({

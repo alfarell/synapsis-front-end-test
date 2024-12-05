@@ -5,8 +5,8 @@ import {
   PostResponse,
   PostsResponse
 } from '@/types';
+import { getUserData } from '@/utils/userData';
 import { AxiosResponse } from 'axios';
-import { getUserData } from './users';
 
 export async function getPostsData(page: number = 1, per_page: number = 10) {
   const { data }: AxiosResponse<PostsResponse> = await axios.get(

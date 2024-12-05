@@ -6,8 +6,8 @@ import {
   EditOutlined
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import { getUserData } from '@/services/users';
 import { usePostForm } from '@/context/PostFormContext';
+import { getUserData } from '@/utils/userData';
 
 const { Text } = Typography;
 
