@@ -8,13 +8,18 @@ import {
 import { getUserData } from '@/utils/userData';
 import { AxiosResponse } from 'axios';
 
-export async function getPostsData(page: number = 1, per_page: number = 10) {
+export async function getPostsData(
+  page: number = 1,
+  per_page: number = 10,
+  search: string = ''
+) {
   const { data }: AxiosResponse<PostsResponse> = await axios.get(
     '/public/v1/posts',
     {
       params: {
         page,
-        per_page
+        per_page,
+        ...(search && { title: search })
       }
     }
   );
