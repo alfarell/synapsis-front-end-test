@@ -1,21 +1,11 @@
 'use client';
 
 import { getPostCommentsData, getPostDetailData } from '@/services/posts';
-import {
-  dehydrate,
-  DehydratedState,
-  HydrationBoundary,
-  useQuery
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Avatar, Button, Card, Pagination, Typography } from 'antd';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { GetServerSidePropsContext } from 'next';
-import {
-  queryClient,
-  COMMENTS_QUERY,
-  POST_QUERY,
-  USER_QUERY
-} from '@/libs/react-query';
+import { COMMENTS_QUERY, POST_QUERY, USER_QUERY } from '@/libs/react-query';
 import { useState } from 'react';
 import { PostSkeleton } from '@/components';
 import { getUserDetailData } from '@/services/users';
@@ -28,18 +18,9 @@ const { Text } = Typography;
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const params = ctx?.params;
   const postId = parseInt((params?.id || '') as string, 10);
-  await queryClient.prefetchQuery({
-    queryKey: [POST_QUERY, postId],
-    queryFn: () => getPostDetailData(postId)
-  });
-  await queryClient.prefetchQuery({
-    queryKey: [COMMENTS_QUERY, postId],
-    queryFn: () => getPostCommentsData(postId)
-  });
 
   return {
     props: {
-      dehydratedState: dehydrate(queryClient),
       postId
     }
   };
@@ -60,7 +41,8 @@ const PostDetail = ({ postId }: { postId: number }) => {
   });
   const { data: postOwnerData, isLoading: isUserLoading } = useQuery({
     queryKey: [USER_QUERY, postData?.data?.user_id],
-    queryFn: () => getUserDetailData(postData?.data?.user_id as number)
+    queryFn: () => getUserDetailData(postData?.data?.user_id as number),
+    retry: 0
   });
   const totalPage = commentData?.meta?.pagination?.total;
   const isCurrentUserPost = userData?.user?.id === postData?.data?.user_id;
@@ -155,18 +137,8 @@ const PostDetail = ({ postId }: { postId: number }) => {
   );
 };
 
-const PostDetailRoute = ({
-  dehydratedState,
-  postId
-}: {
-  dehydratedState: DehydratedState;
-  postId: number;
-}) => {
-  return (
-    <HydrationBoundary state={dehydratedState}>
-      <PostDetail postId={postId} />
-    </HydrationBoundary>
-  );
+const PostDetailRoute = ({ postId }: { postId: number }) => {
+  return <PostDetail postId={postId} />;
 };
 
 export default PostDetailRoute;
